@@ -52,5 +52,5 @@ public class CrawlerTest {
 
 
     // TODO: test cycles in the site graph
-    // TODO: perform more detailed verification of the Page contents in above tests
+    // TODO: perform more detailed verification of the Page contents
 }

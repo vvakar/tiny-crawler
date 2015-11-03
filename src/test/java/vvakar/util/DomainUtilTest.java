@@ -3,8 +3,6 @@ package vvakar.util;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Test;
 import vvakar.beans.ClassifiedLinksBean;
-import vvakar.util.DomainUtil;
-
 import java.util.Collections;
 import java.util.Set;
 
@@ -45,5 +43,37 @@ public class DomainUtilTest {
         //then
         assertEquals(unparseable, classifiedLinksBean.external);
         assertEquals(Collections.EMPTY_SET, classifiedLinksBean.internal);
+    }
+
+    @Test
+    public void testGetDomain() {
+        String url = "http://" + DOMAIN + "/index.html";
+        assertEquals(DOMAIN, DomainUtil.getDomain(url));
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void testGetDomainWithMalformedUrl() {
+        DomainUtil.getDomain("malformed url!");
+    }
+
+    @Test
+    public void testNormalizeUrl() {
+        Set<String> toNormalize = ImmutableSet.of("/index.html");
+        String baseUrl = "http://" + DOMAIN + "/about/";
+        assertEquals(ImmutableSet.of(baseUrl + "index.html"), DomainUtil.normalizeUrls(baseUrl, toNormalize));
+    }
+
+    @Test
+    public void testNormalizeUrlWithLengthOneSlash() {
+        Set<String> toNormalize = ImmutableSet.of("/");
+        String baseUrl = "http://" + DOMAIN + "/about/";
+        assertEquals(ImmutableSet.of(baseUrl), DomainUtil.normalizeUrls(baseUrl, toNormalize));
+    }
+
+    @Test
+    public void testNormalizeUrlWithLengthOneNonSlash() {
+        Set<String> toNormalize = ImmutableSet.of("a");
+        String baseUrl = "http://" + DOMAIN + "/about/";
+        assertEquals(ImmutableSet.of(baseUrl + "a"), DomainUtil.normalizeUrls(baseUrl, toNormalize));
     }
 }

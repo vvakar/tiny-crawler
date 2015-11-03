@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * An html page with its outbound links
+ * Represents a web page with its outbound links
  */
 public class Page {
     public final String url;
@@ -22,10 +22,10 @@ public class Page {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(url + "\n");
-        imageLinks.stream().forEach(l -> sb.append("\tImg: " + l));
-        classifiedLinksBean.internal.stream().forEach(i -> sb.append("\tLink: " + i));
-        classifiedLinksBean.external.stream().forEach(i -> sb.append("\tExternal Link: " + i));
+        sb.append(url);
+        imageLinks.stream().forEach(l -> sb.append("\n\tImg: " + l));
+        classifiedLinksBean.internal.stream().forEach(i -> sb.append("\n\tLink: " + i));
+        classifiedLinksBean.external.stream().forEach(i -> sb.append("\n\tExternal Link: " + i));
         return sb.toString();
     }
 }

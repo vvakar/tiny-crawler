@@ -2,6 +2,7 @@ package vvakar.crawl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.log4j.Logger;
 import vvakar.beans.ClassifiedLinksBean;
 import vvakar.beans.Page;
 import vvakar.util.DomainUtil;
@@ -19,6 +20,9 @@ import java.util.stream.Collectors;
  * Recursively crawl a website, noting the site map structure. Do not follow external links.
  */
 public class Crawler {
+    private static final Logger log = Logger.getLogger(Crawler.class);
+    private static final int LIMIT_PAGES = 100;
+
     private final Queue<String> toCrawl = new LinkedList<>();
     private final ResourceReader resourceReader;
     private final Map<String, Page> visitedPages = new HashMap<>();
@@ -41,7 +45,7 @@ public class Crawler {
     }
 
     private void process(String domain) throws IOException {
-        while (!toCrawl.isEmpty()) {
+        while (!toCrawl.isEmpty() && visitedPages.size() < LIMIT_PAGES) {
             String url = toCrawl.poll();
             if (!visitedPages.containsKey(url)) {
                 String html = resourceReader.read(url);
@@ -51,14 +55,19 @@ public class Crawler {
                 ClassifiedLinksBean classifiedLinksBean = DomainUtil.classifyLinks(domain, links);
                 Set<String> notSeenInternalLinks = classifiedLinksBean.internal
                         .stream()
-                        .filter(u -> !visitedPages.containsKey(u) && !u.startsWith("#") && !u.startsWith("/#"))
+                        .filter(u -> !visitedPages.containsKey(u) && !u.startsWith("#") && !u.startsWith("/#") && !u.startsWith("javascript:"))
                         .collect(Collectors.toSet());
 
                 visitedPages.put(url, new Page(url, classifiedLinksBean, imgs));
+
+                notSeenInternalLinks = DomainUtil.normalizeUrls(url, notSeenInternalLinks);
                 toCrawl.addAll(notSeenInternalLinks); // queue up newly discovered internal links
+
+                log.info("Collected " + url);
             }
         }
     }
+
 
     public Map<String,Page> getPages() {
         return visitedPages;
