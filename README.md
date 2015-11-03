@@ -7,7 +7,7 @@ For demonstration purposes, the crawler is limited to 100 pages.
 
 ##Running
 
-mvn exec:java -Dexec.mainClass=vvakar.crawl.App -Dexec.args='http://wiprodigital.com/'
+mvn install exec:java -Dexec.mainClass=vvakar.crawl.App -Dexec.args='http://wiprodigital.com/'
 
 
 ##Design Limitations
